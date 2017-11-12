@@ -3,10 +3,14 @@
 'use strict';
 
 var path = require('path');
+var sourceMappedCoverage = require('./source-mapped-coverage');
+
+var basePathDir = 'public';
+var fullBasePath = path.join(__dirname, basePathDir);
 
 module.exports = function (config) {
   config.set({
-    basePath: 'public',
+    basePath: basePathDir,
     browsers: [process.env.TRAVIS ? 'Chrome_travis_ci' : 'Chrome'],
     files: ['scripts/modules.js', 'scripts/test.js'],
     reporters: ['dots'].concat(process.env.COVERAGE ? ['coverage'] : []),
@@ -16,12 +20,10 @@ module.exports = function (config) {
       '**/*.js': ['sourcemap'],
       'scripts/modules.js': process.env.COVERAGE ? ['coverage'] : []
     },
-    coverageReporter: {
-      type: 'json',
-      dir: '../coverage/',
-      subdir: '.',
-      file: 'coverage-unmapped.json'
-    },
+    coverageReporter: sourceMappedCoverage(fullBasePath, {
+      type: 'html',
+      dir: '../coverage/'
+    }),
     static: {
       path: path.join(__dirname, 'public')
     },
